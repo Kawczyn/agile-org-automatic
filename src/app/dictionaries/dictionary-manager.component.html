@@ -1,0 +1,5 @@
+<mat-tab-group>
+  <mat-tab *ngFor="let t of tabs" [label]="t.label">
+    <ng-container *ngComponentOutlet="tabComp; inputs: { kind: t.kind }"></ng-container>
+  </mat-tab>
+</mat-tab-group>

@@ -1,0 +1,25 @@
+.tab-wrapper {
+  display: grid;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.error { color: #b00020; }
+.loading { color: #666; }
+
+.table { width: 100%; }
+
+.form {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.actions {
+  display: inline-flex;
+  gap: 8px;
+}
