@@ -42,7 +42,10 @@ export class DictionaryTabComponent<TKind extends DictionaryKind = DictionaryKin
   displayedColumns: string[] = ['id', 'name', 'actions'];
 
   form!: FormGroup<{ id: FormControl<number | null>; name: FormControl<string>; tribeId: FormControl<number | null> }>;
-  editingId = signal<number | null>(null);
+  // -1 = brak edycji; dowolny id = edycja wiersza
+  editingId = signal<number>(-1);
+  // tryb dodawania nowego wpisu
+  isAdding = signal<boolean>(false);
   tribesOptions = signal<TribeDto[]>([]);
 
   ngOnInit(): void {
@@ -52,7 +55,8 @@ export class DictionaryTabComponent<TKind extends DictionaryKind = DictionaryKin
         nonNullable: true,
         validators: [Validators.required, Validators.maxLength(200)],
         asyncValidators: [this.uniqueNameValidator()],
-        updateOn: 'blur',
+        // validate on each change so the Save button enables immediately when valid
+        updateOn: 'change',
       }),
       tribeId: this.fb.control<number | null>(null),
     });
@@ -105,17 +109,20 @@ export class DictionaryTabComponent<TKind extends DictionaryKind = DictionaryKin
   }
 
   beginAdd(): void {
-    this.editingId.set(null);
+    this.isAdding.set(true);
+    this.editingId.set(-1);
     this.form.reset({ id: null, name: '' });
   }
 
   beginEdit(row: any): void {
+    this.isAdding.set(false);
     this.editingId.set(row.id);
     this.form.patchValue({ id: row.id ?? null, name: row.name ?? '' });
   }
 
   cancel(): void {
-    this.editingId.set(null);
+    this.isAdding.set(false);
+    this.editingId.set(-1);
     this.form.reset({ id: null, name: '' });
   }
 
@@ -161,7 +168,7 @@ export class DictionaryTabComponent<TKind extends DictionaryKind = DictionaryKin
     this.error.set(null);
     obs.subscribe({
       next: () => {
-        this.cancel();
+        this.cancel(); // hides add form & clears edit state
         this.load();
       },
       error: (err) => this.error.set(String(err?.message ?? err)),
@@ -198,7 +205,10 @@ export class DictionaryTabComponent<TKind extends DictionaryKind = DictionaryKin
     this.loading.set(true);
     this.error.set(null);
     obs.subscribe({
-      next: () => this.load(),
+      next: () => {
+        this.isAdding.set(false);
+        this.load();
+      },
       error: (err) => this.error.set(String(err?.message ?? err)),
       complete: () => this.loading.set(false),
     });

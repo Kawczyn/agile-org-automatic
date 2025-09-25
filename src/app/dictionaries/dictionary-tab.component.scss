@@ -3,9 +3,11 @@
   gap: 16px;
 }
 
-.header {
+/* Footer below the table with Add button */
+.footer {
   display: flex;
   justify-content: flex-end;
+  margin-top: 12px;
 }
 
 .error { color: #b00020; }
@@ -22,4 +24,11 @@
 .actions {
   display: inline-flex;
   gap: 8px;
+}
+
+/* Space out action buttons in table cells */
+.cell-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px; /* increase space between Edytuj/Usuń */
 }

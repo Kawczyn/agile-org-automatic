@@ -1,12 +1,13 @@
 import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatIconModule } from '@angular/material/icon';
 import { DictionaryTabComponent, DictionaryKind } from './dictionary-tab.component';
 
 @Component({
   selector: 'app-dictionary-manager',
   standalone: true,
-  imports: [CommonModule, MatTabsModule, NgComponentOutlet, DictionaryTabComponent],
+  imports: [CommonModule, MatTabsModule, MatIconModule, NgComponentOutlet, DictionaryTabComponent],
   templateUrl: './dictionary-manager.component.html',
   styleUrls: ['./dictionary-manager.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

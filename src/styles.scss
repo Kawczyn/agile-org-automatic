@@ -1,1 +1,97 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global styles and Angular Material theme */
+@use 'sass:map';
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* 2) UNIQA-like adjustments */
+$brand-blue: #005BAC;
+
+/* 3) Base */
+html, body { height: 100%; }
+body {
+	font-family: 'Roboto', Inter, 'Segoe UI', Arial, sans-serif;
+	color: #1a1a1a;
+	background: #f7f9fc;
+}
+
+/* Dictionary tabs: let the page scroll, not the inner tab content */
+.dict-tabs {
+  height: auto;
+}
+.dict-tabs .mat-mdc-tab-body-wrapper,
+.dict-tabs .mat-mdc-tab-body,
+.dict-tabs .mat-mdc-tab-body-content {
+  height: auto !important;
+  overflow: visible !important;
+}
+
+:root { --uniqa-brand: #{$brand-blue}; }
+
+/* Elegant pill tabs */
+.uniqa-tabs {
+	.mat-mdc-tab-header {
+		background: #fff;
+		border-radius: 16px;
+		padding: 8px;
+		box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+		margin-bottom: 16px;
+	}
+
+	.mat-mdc-tab-header .mdc-tab-indicator { display: none; }
+
+	.mat-mdc-tab-header .mdc-tab {
+		--pill-bg: transparent;
+		--pill-fg: rgba(0,0,0,0.72);
+		--pill-shadow: 0 0 0 rgba(0,0,0,0);
+
+		background: var(--pill-bg);
+		color: var(--pill-fg);
+		border-radius: 12px;
+		padding: 10px 16px;
+		margin: 4px;
+		min-height: 44px;
+		transition: background 180ms ease, color 180ms ease,
+								box-shadow 180ms ease, transform 180ms ease;
+
+		.mdc-tab__content { gap: 8px; }
+
+		&:hover {
+			--pill-bg: rgba(0, 91, 172, 0.08);
+			--pill-fg: var(--uniqa-brand);
+			--pill-shadow: 0 3px 10px rgba(0, 91, 172, 0.15);
+			background: var(--pill-bg);
+			color: var(--pill-fg);
+			box-shadow: var(--pill-shadow);
+			transform: translateY(-1px);
+		}
+
+		&:focus-visible {
+			outline: 2px solid rgba(0, 91, 172, 0.6);
+			outline-offset: 2px;
+		}
+
+		&.mdc-tab--active {
+			--pill-bg: var(--uniqa-brand);
+				--pill-fg: #fff;
+			--pill-shadow: 0 6px 18px rgba(0, 91, 172, 0.32);
+			background: var(--pill-bg);
+				color: var(--pill-fg) !important;
+			box-shadow: var(--pill-shadow);
+			transform: translateY(-1px);
+		}
+
+		.mdc-tab__text-label {
+				font-weight: 600;
+			letter-spacing: 0.2px;
+			font-size: 15px;
+			line-height: 20px;
+		}
+/* (tabs) Reverted to default Material look */
+		.mat-icon {
+			font-size: 20px;
+			line-height: 24px;
+		}
+	}
+}
