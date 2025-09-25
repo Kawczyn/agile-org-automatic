@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -48,7 +48,12 @@ export class DictionaryTabComponent<TKind extends DictionaryKind = DictionaryKin
   ngOnInit(): void {
     this.form = this.fb.group({
       id: this.fb.control<number | null>(null),
-      name: this.fb.control('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(200)] }),
+      name: this.fb.control('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.maxLength(200)],
+        asyncValidators: [this.uniqueNameValidator()],
+        updateOn: 'blur',
+      }),
       tribeId: this.fb.control<number | null>(null),
     });
     if (this.kind === 'squads') {
@@ -197,5 +202,22 @@ export class DictionaryTabComponent<TKind extends DictionaryKind = DictionaryKin
       error: (err) => this.error.set(String(err?.message ?? err)),
       complete: () => this.loading.set(false),
     });
+  }
+
+  // Helper to resolve tribe name by id for squads
+  tribeNameById(id: number | null | undefined): string | number {
+    const t = this.tribesOptions().find((x) => x.id === (id as number));
+    return (t?.name ?? id ?? '');
+  }
+
+  // Async validator to ensure name uniqueness within current list
+  private uniqueNameValidator(): AsyncValidatorFn {
+    return async (control): Promise<ValidationErrors | null> => {
+      const value = (control.value ?? '').toString().trim().toLowerCase();
+      if (!value) return null;
+      const currentId = this.form?.controls.id.value ?? null;
+      const exists = (this.data() ?? []).some((x: any) => (x.name ?? '').toString().trim().toLowerCase() === value && x.id !== currentId);
+      return exists ? { notUnique: true } : null;
+    };
   }
 }
