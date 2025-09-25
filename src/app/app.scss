@@ -2,3 +2,44 @@
 	display: block;
 	min-height: 100vh;
 }
+:host {
+	display: block;
+}
+
+.app-toolbar {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	display: flex;
+	gap: 8px;
+}
+
+.brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	text-transform: none;
+	font-weight: 600;
+}
+
+.logo {
+	opacity: 0.9;
+}
+
+.brand-text {
+	letter-spacing: .25px;
+}
+
+.spacer {
+	flex: 1 1 auto;
+}
+
+.main-nav button[mat-button] {
+	text-transform: none;
+}
+
+@media (max-width: 600px) {
+	.main-nav {
+		display: contents;
+	}
+}

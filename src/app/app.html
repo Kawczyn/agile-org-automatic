@@ -1,3 +1,15 @@
-Agile org automaic
+<mat-toolbar color="primary" class="app-toolbar">
+	<button mat-button class="brand" routerLink="/">
+		<mat-icon class="logo" aria-hidden="true">dashboard</mat-icon>
+		<span class="brand-text">Agile org automaic</span>
+	</button>
+
+	<span class="spacer"></span>
+
+		<nav class="main-nav">
+			<button mat-button routerLink="/okres">Lista pracowników w okresie</button>
+			<button mat-button routerLink="/slowniki">Słowniki</button>
+		</nav>
+</mat-toolbar>
 
 <router-outlet />

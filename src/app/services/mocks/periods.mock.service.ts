@@ -12,7 +12,72 @@ export class MockPeriodsService {
     month: 9,
     quarter: 3,
     isClosed: false,
-    employees: [],
+    employees: [
+      {
+        id: 1,
+        firstName: 'Jan',
+        lastName: 'Kowalski',
+        assignments: [
+          {
+            id: 101,
+            employeeId: 1,
+            squadId: 1,
+            roleId: 1,
+            mpkId: 1,
+            departmentId: 1,
+            fte: 1,
+            contractType: 'UoP',
+            periodId: 1,
+            companies: [
+              { companyId: 1, share: 1 },
+            ],
+          },
+        ],
+      },
+      {
+        id: 2,
+        firstName: 'Anna',
+        lastName: 'Nowak',
+        assignments: [
+          {
+            id: 102,
+            employeeId: 2,
+            squadId: 2,
+            roleId: 2,
+            mpkId: 2,
+            departmentId: 2,
+            fte: 0.8,
+            contractType: 'B2B',
+            periodId: 1,
+            companies: [
+              { companyId: 1, share: 0.5 },
+              { companyId: 2, share: 0.5 },
+            ],
+          },
+        ],
+      },
+      {
+        id: 3,
+        firstName: 'Piotr',
+        lastName: 'Zieliński',
+        assignments: [
+          {
+            id: 103,
+            employeeId: 3,
+            squadId: 1,
+            roleId: 3,
+            mpkId: null,
+            departmentId: null,
+            fte: 0.5,
+            contractType: 'UoD',
+            periodId: 1,
+            companies: [
+              { companyId: 3, share: 1 },
+            ],
+          },
+        ],
+      },
+    ],
   });
 
   getOpenPeriod(): Observable<PeriodWithEmployeesDto> {
@@ -33,7 +98,16 @@ export class MockPeriodsService {
           month: nextMonth,
           quarter: nextQuarter,
           isClosed: false,
-          employees: [],
+          employees: (prev.employees ?? []).map(e => ({
+            ...e,
+            // shallow copy assignments and update periodId for the new period
+            assignments: (e.assignments ?? []).map(a => ({
+              ...a,
+              // new assignment id optional in mock; keep or increment for readability
+              id: (a.id ?? 0) + 100,
+              periodId: (prev.id ?? 0) + 1,
+            })),
+          })),
         };
         this.current$.next(next);
         return next;

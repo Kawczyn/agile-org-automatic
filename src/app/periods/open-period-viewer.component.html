@@ -1,0 +1,55 @@
+<mat-card class="period-card">
+  <mat-card-header>
+    <div mat-card-avatar class="period-avatar">
+      <mat-icon>{{ statusIcon() }}</mat-icon>
+    </div>
+    <mat-card-title>{{ periodLabel }}</mat-card-title>
+    <mat-card-subtitle>
+      <span class="status" [class.closed]="isClosed" [class.open]="!isClosed">
+        <mat-icon class="status-icon" aria-hidden="true">info</mat-icon>
+        {{ statusLabel() }} (Q{{ period?.quarter ?? '-' }})
+      </span>
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <ng-container *ngIf="period; else empty">
+      <mat-list role="list" class="meta">
+        <mat-list-item role="listitem">
+          <mat-icon matListItemIcon aria-hidden="true">calendar_today</mat-icon>
+          <div matListItemTitle>Miesiąc</div>
+          <div matListItemLine>{{ monthName(period?.month) }}</div>
+        </mat-list-item>
+        <mat-list-item role="listitem">
+          <mat-icon matListItemIcon aria-hidden="true">event</mat-icon>
+          <div matListItemTitle>Rok</div>
+          <div matListItemLine>{{ period?.year }}</div>
+        </mat-list-item>
+        <mat-list-item role="listitem">
+          <mat-icon matListItemIcon aria-hidden="true">groups</mat-icon>
+          <div matListItemTitle>Pracownicy</div>
+          <div matListItemLine>{{ period?.employees?.length ?? 0 }}</div>
+        </mat-list-item>
+      </mat-list>
+
+      <div class="chips">
+        <mat-chip-set aria-label="status">
+          <mat-chip [disabled]="true" [color]="isClosed ? 'warn' : 'primary'" selected>
+            <mat-icon>{{ statusIcon() }}</mat-icon>
+            {{ statusLabel() }}
+          </mat-chip>
+          <mat-chip [disabled]="true" selected>
+            Q{{ period?.quarter ?? '-' }}
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+    </ng-container>
+
+    <ng-template #empty>
+      <div class="empty">
+        <mat-icon class="empty-icon" aria-hidden="true">hourglass_empty</mat-icon>
+        <p>Brak danych okresu do wyświetlenia.</p>
+      </div>
+    </ng-template>
+  </mat-card-content>
+</mat-card>
