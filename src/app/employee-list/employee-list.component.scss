@@ -1,0 +1,13 @@
+section { padding: 1rem 1.25rem; }
+.error { color: var(--color-danger); margin: .5rem 0; background: #fff1f2; border: 1px solid #fecdd3; padding: .5rem .75rem; border-radius: var(--radius-sm); }
+.table { margin-top: 1rem; }
+.table th, .table td { vertical-align: middle; }
+
+.toolbar { margin: .5rem 0 1rem; display: flex; gap: .5rem; }
+.form { display: flex; gap: .75rem; align-items: end; margin: .75rem 0 1rem; padding: .75rem; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.form label { display: flex; flex-direction: column; font-size: .9rem; color: #0b2a4d; }
+.form input { padding: .35rem .5rem; }
+.form .actions { display: flex; gap: .5rem; }
+
+.inline-inputs { display: flex; gap: .5rem; }
+.muted { color: var(--color-muted); }

@@ -1,0 +1,342 @@
+<section>
+  <h2>Pracownicy</h2>
+
+  <div *ngIf="isLoading()">Wczytywanie…</div>
+  <div *ngIf="error() as e" class="error">{{ e }}</div>
+
+  <!-- Pasek narzędzi CRUD -->
+  <div class="toolbar">
+  <button type="button" class="btn btn-primary" (click)="beginCreate()">+ Nowy pracownik</button>
+  </div>
+
+  <!-- Formularz tworzenia/edycji -->
+  <form *ngIf="editing" (ngSubmit)="submitForm()" class="form">
+    <label>
+      Imię
+      <input name="firstName" [(ngModel)]="form.firstName" required />
+    </label>
+    <label>
+      Nazwisko
+      <input name="lastName" [(ngModel)]="form.lastName" required />
+    </label>
+    <div class="actions">
+  <button type="submit" class="btn btn-primary">{{ form.id ? 'Zapisz' : 'Utwórz' }}</button>
+  <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Anuluj</button>
+    </div>
+  </form>
+
+  <div *ngIf="!isLoading() && employees().length === 0">Brak pracowników.</div>
+
+  <table class="table" *ngIf="!isLoading() && employees().length > 0">
+    <thead>
+      <tr>
+  <th>ID</th>
+  <th>Imię i nazwisko</th>
+  <th>Zespół</th>
+  <th>Rola</th>
+  <th>Chapter (MPK)</th>
+  <th>Dział</th>
+  <th>FTE</th>
+  <th>Umowa</th>
+  <th>Rok</th>
+  <th>Miesiąc</th>
+  <th>Kwartał</th>
+  <th>Firma</th>
+  <th>Udział</th>
+  <th>Akcje</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (e of employees(); track e.id) {
+        @if (((e.assignments?.length ?? 0) > 0)) {
+          @for (a of e.assignments; track a.id) {
+            @if (((a.companies?.length ?? 0) > 0)) {
+              @for (c of (a.companies ?? []); track c.companyId) {
+                <tr>
+                  <td>{{ e.id }}</td>
+                  <td>{{ e.firstName }} {{ e.lastName }}</td>
+                  <td>
+                    @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === c.companyId) {
+                      <select [(ngModel)]="rowForm!.squadId" name="sq-{{e.id}}-{{a.id}}-{{c.companyId}}">
+                        @for (s of squadsSig(); track s.id) {
+                          <option [ngValue]="s.id">{{ s.name }}</option>
+                        }
+                      </select>
+                    } @else { {{ squadName(a.squadId) }} }
+                  </td>
+                  <td>
+                    @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === c.companyId) {
+                      <select [(ngModel)]="rowForm!.roleId" name="rl-{{e.id}}-{{a.id}}-{{c.companyId}}">
+                        @for (r of rolesSig(); track r.id) {
+                          <option [ngValue]="r.id">{{ r.name }}</option>
+                        }
+                      </select>
+                    } @else { {{ roleName(a.roleId) }} }
+                  </td>
+                  <td>
+                    @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === c.companyId) {
+                      <select [(ngModel)]="rowForm!.chapterId" name="ch-{{e.id}}-{{a.id}}-{{c.companyId}}">
+                        @for (ch of chaptersSig(); track ch.id) {
+                          <option [ngValue]="ch.id">{{ ch.name }} ({{ ch.mpk }})</option>
+                        }
+                      </select>
+                    } @else { {{ chapterDisplay(a.chapterId) }} }
+                  </td>
+                  <td>
+                    @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === c.companyId) {
+                      <select [(ngModel)]="rowForm!.departmentId" name="dp-{{e.id}}-{{a.id}}-{{c.companyId}}">
+                        @for (d of departmentsSig(); track d.id) {
+                          <option [ngValue]="d.id">{{ d.name }}</option>
+                        }
+                      </select>
+                    } @else { {{ departmentName(a.departmentId) }} }
+                  </td>
+                  <td>
+                    @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === c.companyId) {
+                      <input type="number" step="0.1" [(ngModel)]="rowForm!.fte" name="fte-{{e.id}}-{{a.id}}-{{c.companyId}}" />
+                    } @else { {{ a.fte }} }
+                  </td>
+                  <td>
+                    @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === c.companyId) {
+                      <input [(ngModel)]="rowForm!.contractType" name="ct-{{e.id}}-{{a.id}}-{{c.companyId}}" />
+                    } @else { {{ a.contractType }} }
+                  </td>
+                  <td>
+                    @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === c.companyId) {
+                      <input type="number" [(ngModel)]="rowForm!.year" name="yr-{{e.id}}-{{a.id}}-{{c.companyId}}" />
+                    } @else { {{ a.year }} }
+                  </td>
+                  <td>
+                    @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === c.companyId) {
+                      <input type="number" [(ngModel)]="rowForm!.month" name="mo-{{e.id}}-{{a.id}}-{{c.companyId}}" />
+                    } @else { {{ a.month }} }
+                  </td>
+                  <td>
+                    @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === c.companyId) {
+                      <input type="number" [(ngModel)]="rowForm!.quarter" name="qr-{{e.id}}-{{a.id}}-{{c.companyId}}" />
+                    } @else { {{ a.quarter }} }
+                  </td>
+                  <td>
+                    @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === c.companyId) {
+                      <select [(ngModel)]="rowForm!.companyId" name="co-{{e.id}}-{{a.id}}-{{c.companyId}}">
+                        @for (co of companiesSig(); track co.id) {
+                          <option [ngValue]="co.id">{{ co.name }}</option>
+                        }
+                      </select>
+                    } @else { {{ companyName(c.companyId) }} }
+                  </td>
+                  <td>
+                    @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === c.companyId) {
+                      <input type="number" step="0.01" [(ngModel)]="rowForm!.share" name="sh-{{e.id}}-{{a.id}}-{{c.companyId}}" />
+                    } @else { {{ c.share | number:'1.0-2' }} }
+                  </td>
+                   <td>
+                     @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === c.companyId) {
+                      <button type="button" class="btn btn-primary" (click)="saveRow()">Zapisz</button>
+                      <button type="button" class="btn btn-secondary" (click)="cancelRowEdit()">Anuluj</button>
+                     } @else {
+                      <button type="button" class="btn btn-secondary" (click)="beginRowEdit(e, a, c)">Edytuj</button>
+                      <button type="button" class="btn btn-danger" (click)="removeEmployee(e.id)">Usuń</button>
+                     }
+                   </td>
+                </tr>
+              }
+              <!-- Add company row -->
+              <tr class="muted">
+                <td>{{ e.id }}</td>
+                <td>{{ e.firstName }} {{ e.lastName }}</td>
+                <td>{{ squadName(a.squadId) }}</td>
+                <td>{{ roleName(a.roleId) }}</td>
+                <td>{{ chapterDisplay(a.chapterId) }}</td>
+                <td>{{ departmentName(a.departmentId) }}</td>
+                <td>{{ a.fte }}</td>
+                <td>{{ a.contractType }}</td>
+                <td>{{ a.year }}</td>
+                <td>{{ a.month }}</td>
+                <td>{{ a.quarter }}</td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <select [(ngModel)]="rowForm!.companyId" name="co-add-{{e.id}}-{{a.id}}">
+                      @for (co of companiesSig(); track co.id) {
+                        <option [ngValue]="co.id">{{ co.name }}</option>
+                      }
+                    </select>
+                  } @else { — }
+                </td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <input type="number" step="0.01" [(ngModel)]="rowForm!.share" name="sh-add-{{e.id}}-{{a.id}}" />
+                  } @else { — }
+                </td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <button type="button" class="btn btn-primary" (click)="saveRow()">Dodaj firmę</button>
+                    <button type="button" class="btn btn-secondary" (click)="cancelRowEdit()">Anuluj</button>
+                  } @else {
+                    <button type="button" class="btn btn-secondary" (click)="beginRowEdit(e, a, null)">Dodaj firmę</button>
+                  }
+                </td>
+              </tr>
+            } @else {
+              <tr class="muted">
+                <td>{{ e.id }}</td>
+                <td>{{ e.firstName }} {{ e.lastName }}</td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <select [(ngModel)]="rowForm!.squadId" name="sq-{{e.id}}-{{a.id}}-none">
+                      @for (s of squadsSig(); track s.id) {
+                        <option [ngValue]="s.id">{{ s.name }}</option>
+                      }
+                    </select>
+                  } @else { {{ squadName(a.squadId) }} }
+                </td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <select [(ngModel)]="rowForm!.roleId" name="rl-{{e.id}}-{{a.id}}-none">
+                      @for (r of rolesSig(); track r.id) {
+                        <option [ngValue]="r.id">{{ r.name }}</option>
+                      }
+                    </select>
+                  } @else { {{ roleName(a.roleId) }} }
+                </td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <select [(ngModel)]="rowForm!.chapterId" name="ch-{{e.id}}-{{a.id}}-none">
+                      @for (ch of chaptersSig(); track ch.id) {
+                        <option [ngValue]="ch.id">{{ ch.name }} ({{ ch.mpk }})</option>
+                      }
+                    </select>
+                  } @else { {{ chapterDisplay(a.chapterId) }} }
+                </td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <select [(ngModel)]="rowForm!.departmentId" name="dp-{{e.id}}-{{a.id}}-none">
+                      @for (d of departmentsSig(); track d.id) {
+                        <option [ngValue]="d.id">{{ d.name }}</option>
+                      }
+                    </select>
+                  } @else { {{ departmentName(a.departmentId) }} }
+                </td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <input type="number" step="0.1" [(ngModel)]="rowForm!.fte" name="fte-{{e.id}}-{{a.id}}-none" />
+                  } @else { {{ a.fte }} }
+                </td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <input [(ngModel)]="rowForm!.contractType" name="ct-{{e.id}}-{{a.id}}-none" />
+                  } @else { {{ a.contractType }} }
+                </td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <input type="number" [(ngModel)]="rowForm!.year" name="yr-{{e.id}}-{{a.id}}-none" />
+                  } @else { {{ a.year }} }
+                </td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <input type="number" [(ngModel)]="rowForm!.month" name="mo-{{e.id}}-{{a.id}}-none" />
+                  } @else { {{ a.month }} }
+                </td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <input type="number" [(ngModel)]="rowForm!.quarter" name="qr-{{e.id}}-{{a.id}}-none" />
+                  } @else { {{ a.quarter }} }
+                </td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <select [(ngModel)]="rowForm!.companyId" name="co-new-{{e.id}}-{{a.id}}">
+                      @for (co of companiesSig(); track co.id) {
+                        <option [ngValue]="co.id">{{ co.name }}</option>
+                      }
+                    </select>
+                  } @else { Brak firm }
+                </td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <input type="number" step="0.01" [(ngModel)]="rowForm!.share" name="sh-new-{{e.id}}-{{a.id}}" />
+                  } @else { — }
+                </td>
+                <td>
+                  @if (editingRow?.empId === e.id && editingRow?.assignmentId === a.id && editingRow?.companyId === null) {
+                    <button type="button" class="btn btn-primary" (click)="saveRow()">Zapisz</button>
+                    <button type="button" class="btn btn-secondary" (click)="cancelRowEdit()">Anuluj</button>
+                  } @else {
+                    <button type="button" class="btn btn-secondary" (click)="beginRowEdit(e, a, null)">Edytuj</button>
+                    <button type="button" class="btn btn-danger" (click)="removeEmployee(e.id)">Usuń</button>
+                  }
+                </td>
+              </tr>
+            }
+          }
+        } @else {
+          <tr class="muted">
+            <td>{{ e.id }}</td>
+            <td>{{ e.firstName }} {{ e.lastName }}</td>
+            <td>
+              <select [(ngModel)]="rowForm!.squadId" name="sq-new-{{e.id}}" *ngIf="editingRow?.empId === e.id && editingRow?.assignmentId === null && editingRow?.companyId === null; else noAssignSquad">
+                @for (s of squadsSig(); track s.id) {
+                  <option [ngValue]="s.id">{{ s.name }}</option>
+                }
+              </select>
+              <ng-template #noAssignSquad>{{ '—' }}</ng-template>
+            </td>
+            <td>
+              <select [(ngModel)]="rowForm!.roleId" name="rl-new-{{e.id}}" *ngIf="editingRow?.empId === e.id && editingRow?.assignmentId === null && editingRow?.companyId === null; else noAssignRole">
+                @for (r of rolesSig(); track r.id) {
+                  <option [ngValue]="r.id">{{ r.name }}</option>
+                }
+              </select>
+              <ng-template #noAssignRole>{{ '—' }}</ng-template>
+            </td>
+            <td>
+              <select [(ngModel)]="rowForm!.chapterId" name="ch-new-{{e.id}}" *ngIf="editingRow?.empId === e.id && editingRow?.assignmentId === null && editingRow?.companyId === null; else noAssignChapter">
+                @for (ch of chaptersSig(); track ch.id) {
+                  <option [ngValue]="ch.id">{{ ch.name }} ({{ ch.mpk }})</option>
+                }
+              </select>
+              <ng-template #noAssignChapter>{{ '—' }}</ng-template>
+            </td>
+            <td>
+              <select [(ngModel)]="rowForm!.departmentId" name="dp-new-{{e.id}}" *ngIf="editingRow?.empId === e.id && editingRow?.assignmentId === null && editingRow?.companyId === null; else noAssignDept">
+                @for (d of departmentsSig(); track d.id) {
+                  <option [ngValue]="d.id">{{ d.name }}</option>
+                }
+              </select>
+              <ng-template #noAssignDept>{{ '—' }}</ng-template>
+            </td>
+            <td>
+              <input type="number" step="0.1" [(ngModel)]="rowForm!.fte" name="fte-new-{{e.id}}" *ngIf="editingRow?.empId === e.id && editingRow?.assignmentId === null && editingRow?.companyId === null; else noAssignFte" />
+              <ng-template #noAssignFte>{{ '—' }}</ng-template>
+            </td>
+            <td>
+              <input [(ngModel)]="rowForm!.contractType" name="ct-new-{{e.id}}" *ngIf="editingRow?.empId === e.id && editingRow?.assignmentId === null && editingRow?.companyId === null; else noAssignCt" />
+              <ng-template #noAssignCt>{{ '—' }}</ng-template>
+            </td>
+            <td>
+              <input type="number" [(ngModel)]="rowForm!.year" name="yr-new-{{e.id}}" *ngIf="editingRow?.empId === e.id && editingRow?.assignmentId === null && editingRow?.companyId === null; else noAssignYear" />
+              <ng-template #noAssignYear>{{ '—' }}</ng-template>
+            </td>
+            <td>
+              <input type="number" [(ngModel)]="rowForm!.month" name="mo-new-{{e.id}}" *ngIf="editingRow?.empId === e.id && editingRow?.assignmentId === null && editingRow?.companyId === null; else noAssignMonth" />
+              <ng-template #noAssignMonth>{{ '—' }}</ng-template>
+            </td>
+            <td>
+              <input type="number" [(ngModel)]="rowForm!.quarter" name="qr-new-{{e.id}}" *ngIf="editingRow?.empId === e.id && editingRow?.assignmentId === null && editingRow?.companyId === null; else noAssignQuarter" />
+              <ng-template #noAssignQuarter>{{ '—' }}</ng-template>
+            </td>
+            <td colspan="2">—</td>
+            <td>
+              @if (editingRow?.empId === e.id && editingRow?.assignmentId === null && editingRow?.companyId === null) {
+                <button type="button" class="btn btn-primary" (click)="saveRow()">Dodaj przypisanie</button>
+                <button type="button" class="btn btn-secondary" (click)="cancelRowEdit()">Anuluj</button>
+              } @else {
+                <button type="button" class="btn btn-secondary" (click)="beginRowEdit(e, null, null)">Dodaj przypisanie</button>
+                <button type="button" class="btn btn-danger" (click)="removeEmployee(e.id)">Usuń</button>
+              }
+            </td>
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+</section>
