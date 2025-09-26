@@ -18,6 +18,7 @@ export interface EmployeeAssignmentDto {
   id?: number;
   employeeId: number;
   squadId: number;
+  tribeId: number;
   roleId: number;
   mpkId?: number | null;
   departmentId?: number | null;

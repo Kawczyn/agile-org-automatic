@@ -1,23 +1,60 @@
-.period-card {
-  max-width: 720px;
+
+.period {
+  max-width: 960px;
   margin: 16px auto;
+  padding: 0 8px;
 }
 
-.period-avatar {
+.period-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.period-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 91, 172, 0.1);
-  color: #005BAC;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
+  background: rgba(0, 91, 172, 0.1); /* light blue circle */
+  color: #005BAC; /* blue lock */
+}
+
+.period-title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.q-badge {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.06);
+}
+
+.period-subtitle {
+  font-size: 13px;
+  color: rgba(0,0,0,0.6);
 }
 
 .status {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  &.open { color: #2e7d32; }
-  &.closed { color: #c62828; }
+}
+.status.open { color: #2e7d32; }
+.status.closed { color: #c62828; }
+
+/* keep lock blue regardless of status */
+.period-icon.open,
+.period-icon.closed {
+  background: rgba(0, 91, 172, 0.1);
+  color: #005BAC;
 }
 
 .meta {
@@ -28,17 +65,26 @@
   margin-top: 12px;
 }
 
-.empty {
+.period-details {
+  margin-top: 12px;
+}
+
+.employees {
+  margin-top: 16px;
+}
+
+table[mat-table] {
+  width: 100%;
+}
+
+.employees-empty {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 8px;
   color: rgba(0,0,0,0.54);
-  padding: 24px 0;
+  padding: 12px 0;
 }
 
-.empty-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
-}
+/* flattened rows – no expand styles needed */
+
+/* removed employees/empty/table blocks since viewer shows only header */

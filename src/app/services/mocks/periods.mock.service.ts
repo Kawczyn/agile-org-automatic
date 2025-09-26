@@ -21,6 +21,7 @@ export class MockPeriodsService {
           {
             id: 101,
             employeeId: 1,
+            tribeId: 1,
             squadId: 1,
             roleId: 1,
             mpkId: 1,
@@ -30,6 +31,7 @@ export class MockPeriodsService {
             periodId: 1,
             companies: [
               { companyId: 1, share: 1 },
+    { companyId: 2, share: 0.5 },
             ],
           },
         ],
@@ -42,6 +44,23 @@ export class MockPeriodsService {
           {
             id: 102,
             employeeId: 2,
+            tribeId: 2,
+            squadId: 2,
+            roleId: 2,
+            mpkId: 2,
+            departmentId: 2,
+            fte: 0.8,
+            contractType: 'B2B',
+            periodId: 1,
+            companies: [
+              { companyId: 1, share: 0.5 },
+              { companyId: 2, share: 0.5 },
+            ],
+          },
+                    {
+            id: 104,
+            employeeId: 2,
+            tribeId: 2,
             squadId: 2,
             roleId: 2,
             mpkId: 2,
@@ -64,7 +83,8 @@ export class MockPeriodsService {
           {
             id: 103,
             employeeId: 3,
-            squadId: 1,
+            
+            squadId: 1,tribeId: 1,
             roleId: 3,
             mpkId: null,
             departmentId: null,

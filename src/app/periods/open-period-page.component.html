@@ -1,0 +1,9 @@
+<section class="open-period-page">
+  <h2 class="page-title">Lista pracowników w otwartym okresie</h2>
+  <div class="page-content">
+    <app-open-period-viewer [period]="period()"></app-open-period-viewer>
+  </div>
+  <div class="page-actions">
+    <button mat-stroked-button color="primary" (click)="reload()">Odśwież</button>
+  </div>
+</section>
