@@ -54,7 +54,12 @@
  
           <ng-container matColumnDef="squad">
             <th mat-header-cell *matHeaderCellDef> Squad </th>
-            <td mat-cell *matCellDef="let r"> {{ squadName(r.assignment?.squadId) }}<ng-container *ngIf="tribeNameForSquad(r.assignment?.squadId) as tn"> ({{ tn }})</ng-container> </td>
+            <td mat-cell *matCellDef="let r"> {{ squadName(r.assignment?.squadId) }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="tribe">
+            <th mat-header-cell *matHeaderCellDef> Tribe </th>
+            <td mat-cell *matCellDef="let r"> {{ tribeNameForSquad(r.assignment?.squadId) || '—' }} </td>
           </ng-container>
         
 
@@ -68,14 +73,29 @@
             <td mat-cell *matCellDef="let r"> {{ departmentName(r.assignment?.departmentId) }} </td>
           </ng-container>
 
-          <ng-container matColumnDef="periodId">
-            <th mat-header-cell *matHeaderCellDef> Period ID </th>
-            <td mat-cell *matCellDef="let r"> {{ r.assignment?.periodId ?? '—' }} </td>
+          <ng-container matColumnDef="year">
+            <th mat-header-cell *matHeaderCellDef> Rok </th>
+            <td mat-cell *matCellDef="let r"> {{ period?.year ?? '—' }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="month">
+            <th mat-header-cell *matHeaderCellDef> Miesiąc </th>
+            <td mat-cell *matCellDef="let r"> {{ monthName(period?.month) || '—' }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="quarter">
+            <th mat-header-cell *matHeaderCellDef> Kwartał </th>
+            <td mat-cell *matCellDef="let r"> Q{{ period?.quarter ?? '—' }} </td>
           </ng-container>
 
           <ng-container matColumnDef="company">
             <th mat-header-cell *matHeaderCellDef> Spółka </th>
-            <td mat-cell *matCellDef="let r"> {{ companyText(r.assignment, r.companyId) }} </td>
+            <td mat-cell *matCellDef="let r"> {{ companyName(r.companyId) }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="companyShare">
+            <th mat-header-cell *matHeaderCellDef> Udział </th>
+            <td mat-cell *matCellDef="let r"> {{ companyShare(r.assignment, r.companyId) }} </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

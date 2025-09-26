@@ -18,7 +18,7 @@ import { forkJoin, take } from 'rxjs';
 export class OpenPeriodViewerComponent implements OnInit {
   @Input() period?: PeriodWithEmployeesDto | null;
   displayedColumns = [
-    'id','firstName','lastName','contractType','fte','role','squad','mpk','department','periodId','company'
+    'id','firstName','lastName','contractType','fte','role','squad','tribe','mpk','department','year','month','quarter','company','companyShare'
   ];
   displayedColumnsPeriod = ['id', 'year', 'month', 'quarter', 'isClosed'];
 
@@ -145,13 +145,7 @@ export class OpenPeriodViewerComponent implements OnInit {
     return (e.assignments ?? [])[0] ?? null;
   }
 
-  companyText(a: { companies?: { companyId: number; share: number }[] | null } | null, companyId?: number | null) {
-    if (!a) return '—';
-    if (!companyId) return '—';
-    const found = (a.companies ?? []).find(c => c.companyId === companyId);
-    if (!found) return '—';
-    return `${this.companyName(found.companyId)} (${Math.round((found.share ?? 0) * 100)}%)`;
-  }
+  // (companyText removed – replaced by separate company/companyShare columns)
 
   roleName(id?: number | null): string {
     if (id == null) return '—';
@@ -192,10 +186,20 @@ export class OpenPeriodViewerComponent implements OnInit {
     return this.companiesById.get(key) ?? `Company ${id}`;
   }
 
-  fteText(v?: number | null): string {
-    if (v == null) return '—';
-    const n = Number(v);
+  companyShare(a: { companies?: { companyId: number; share: number }[] | null } | null, companyId?: number | null): string {
+    if (!a || companyId == null) return '—';
+    const found = (a.companies ?? []).find(c => c.companyId === companyId);
+    if (!found) return '—';
+    const share = Number(found.share);
+    if (Number.isNaN(share)) return '—';
+    return `${Math.round(share * 100)}%`;
+  }
+
+  // Formatowanie FTE: null/undefined -> '—', liczby z dwoma miejscami, przy pełnym 1 dokładnie '1.00'.
+  fteText(fte?: number | null): string {
+    if (fte == null) return '—';
+    const n = Number(fte);
     if (Number.isNaN(n)) return '—';
-    return n.toLocaleString('pl-PL', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    return n.toFixed(2).replace(/\.00$/, '.00');
   }
 }
