@@ -1,3 +1,7 @@
+/* Ukryta kolumna powiązania okresu */
+th.hidden-col, td.hidden-col {
+  display: none;
+}
 
 .period {
   max-width: 960px;

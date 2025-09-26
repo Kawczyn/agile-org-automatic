@@ -21,8 +21,8 @@ export class MockPeriodsService {
           {
             id: 101,
             employeeId: 1,
-            tribeId: 1,
             squadId: 1,
+            tribeId: 1,
             roleId: 1,
             mpkId: 1,
             departmentId: 1,
@@ -44,8 +44,8 @@ export class MockPeriodsService {
           {
             id: 102,
             employeeId: 2,
-            tribeId: 2,
             squadId: 2,
+            tribeId: 2,
             roleId: 2,
             mpkId: 2,
             departmentId: 2,
@@ -60,8 +60,8 @@ export class MockPeriodsService {
                     {
             id: 104,
             employeeId: 2,
-            tribeId: 2,
             squadId: 2,
+            tribeId: 2,
             roleId: 2,
             mpkId: 2,
             departmentId: 2,
@@ -83,8 +83,8 @@ export class MockPeriodsService {
           {
             id: 103,
             employeeId: 3,
-            
-            squadId: 1,tribeId: 1,
+            squadId: 1,
+            tribeId: 1,
             roleId: 3,
             mpkId: null,
             departmentId: null,

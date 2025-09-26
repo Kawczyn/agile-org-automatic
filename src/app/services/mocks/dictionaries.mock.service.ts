@@ -22,8 +22,9 @@ export class MockDictionariesService {
   ]);
 
   private companies$ = new BehaviorSubject<CompanyDto[]>([
-    { id: 1, name: 'Acme S.A.' },
-    { id: 2, name: 'Globex Sp. z o.o.' },
+    { id: 1, name: 'Uniqa TU' },
+    { id: 2, name: 'Uniqa Polska' },
+    { id: 3, name: 'Uniqa PTE' },
   ]);
 
   private tribes$ = new BehaviorSubject<TribeDto[]>([

@@ -21,81 +21,79 @@
 
     <ng-container *ngIf="period as p">
       <div class="employees" *ngIf="dictsReady; else loadingDicts">
-        <table mat-table [dataSource]="flattenedRows()" class="mat-elevation-z1 employees-table">
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef> ID </th>
-            <td mat-cell *matCellDef="let r"> {{ r.id }} </td>
-          </ng-container>
-
+  <table mat-table [dataSource]="flattenedRows()" class="mat-elevation-z1 employees-table">
+          <!-- Imię -->
           <ng-container matColumnDef="firstName">
             <th mat-header-cell *matHeaderCellDef> Imię </th>
             <td mat-cell *matCellDef="let r"> {{ r.firstName || '—' }} </td>
           </ng-container>
 
+          <!-- Nazwisko -->
           <ng-container matColumnDef="lastName">
             <th mat-header-cell *matHeaderCellDef> Nazwisko </th>
             <td mat-cell *matCellDef="let r"> {{ r.lastName || '—' }} </td>
           </ng-container>
 
-          <ng-container matColumnDef="contractType">
-            <th mat-header-cell *matHeaderCellDef> Umowa </th>
-            <td mat-cell *matCellDef="let r"> {{ r.assignment?.contractType || '—' }} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="fte">
-            <th mat-header-cell *matHeaderCellDef> FTE </th>
-            <td mat-cell *matCellDef="let r"> {{ fteText(r.assignment?.fte) }} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="role">
-            <th mat-header-cell *matHeaderCellDef> Rola </th>
-            <td mat-cell *matCellDef="let r"> {{ roleName(r.assignment?.roleId) }} </td>
-          </ng-container>
- 
-          <ng-container matColumnDef="squad">
-            <th mat-header-cell *matHeaderCellDef> Squad </th>
-            <td mat-cell *matCellDef="let r"> {{ squadName(r.assignment?.squadId) }} </td>
-          </ng-container>
-
+          <!-- Tribe -->
           <ng-container matColumnDef="tribe">
             <th mat-header-cell *matHeaderCellDef> Tribe </th>
             <td mat-cell *matCellDef="let r"> {{ tribeNameForSquad(r.assignment?.squadId) || '—' }} </td>
           </ng-container>
-        
 
+          <!-- Squad -->
+            <ng-container matColumnDef="squad">
+              <th mat-header-cell *matHeaderCellDef> Squad </th>
+              <td mat-cell *matCellDef="let r"> {{ squadName(r.assignment?.squadId) }} </td>
+            </ng-container>
+
+          <!-- Rola -->
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef> Rola </th>
+            <td mat-cell *matCellDef="let r"> {{ roleName(r.assignment?.roleId) }} </td>
+          </ng-container>
+
+          <!-- Jednostka organizacyjna (department) -->
+          <ng-container matColumnDef="department">
+            <th mat-header-cell *matHeaderCellDef> Jednostka org. </th>
+            <td mat-cell *matCellDef="let r"> {{ departmentName(r.assignment?.departmentId) }} </td>
+          </ng-container>
+
+          <!-- MPK -->
           <ng-container matColumnDef="mpk">
             <th mat-header-cell *matHeaderCellDef> MPK </th>
             <td mat-cell *matCellDef="let r"> {{ mpkName(r.assignment?.mpkId) }} </td>
           </ng-container>
 
-          <ng-container matColumnDef="department">
-            <th mat-header-cell *matHeaderCellDef> Dział </th>
-            <td mat-cell *matCellDef="let r"> {{ departmentName(r.assignment?.departmentId) }} </td>
+          <!-- FTE -->
+          <ng-container matColumnDef="fte">
+            <th mat-header-cell *matHeaderCellDef> FTE </th>
+            <td mat-cell *matCellDef="let r"> {{ fteText(r.assignment?.fte) }} </td>
           </ng-container>
 
-          <ng-container matColumnDef="year">
-            <th mat-header-cell *matHeaderCellDef> Rok </th>
-            <td mat-cell *matCellDef="let r"> {{ period?.year ?? '—' }} </td>
+          <!-- Format zatrudnienia (contractType) -->
+          <ng-container matColumnDef="contractType">
+            <th mat-header-cell *matHeaderCellDef> Umowa </th>
+            <td mat-cell *matCellDef="let r"> {{ r.assignment?.contractType || '—' }} </td>
           </ng-container>
 
-          <ng-container matColumnDef="month">
-            <th mat-header-cell *matHeaderCellDef> Miesiąc </th>
-            <td mat-cell *matCellDef="let r"> {{ monthName(period?.month) || '—' }} </td>
+          <ng-container matColumnDef="periodId">
+            <th mat-header-cell *matHeaderCellDef class="hidden-col">Period</th>
+            <td mat-cell *matCellDef="let r" class="hidden-col"> {{ r.assignment?.periodId ?? period?.id ?? '—' }} </td>
           </ng-container>
 
-          <ng-container matColumnDef="quarter">
-            <th mat-header-cell *matHeaderCellDef> Kwartał </th>
-            <td mat-cell *matCellDef="let r"> Q{{ period?.quarter ?? '—' }} </td>
+          <!-- Dynamiczne kolumny spółek (pivot) -->
+          <ng-container *ngFor="let cid of companyIds" [matColumnDef]="'company_'+cid">
+            <th mat-header-cell *matHeaderCellDef> {{ companyName(cid) }} </th>
+            <td mat-cell *matCellDef="let r"> {{ shareForCompany(r.assignment, cid) }} </td>
           </ng-container>
 
-          <ng-container matColumnDef="company">
-            <th mat-header-cell *matHeaderCellDef> Spółka </th>
-            <td mat-cell *matCellDef="let r"> {{ companyName(r.companyId) }} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="companyShare">
-            <th mat-header-cell *matHeaderCellDef> Udział </th>
-            <td mat-cell *matCellDef="let r"> {{ companyShare(r.assignment, r.companyId) }} </td>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> Akcje </th>
+            <td mat-cell *matCellDef="let r">
+              <button mat-icon-button color="warn" (click)="deleteRow(r)" aria-label="Usuń">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

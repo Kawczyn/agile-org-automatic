@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
@@ -17,9 +17,12 @@ import { forkJoin, take } from 'rxjs';
 })
 export class OpenPeriodViewerComponent implements OnInit {
   @Input() period?: PeriodWithEmployeesDto | null;
-  displayedColumns = [
-    'id','firstName','lastName','contractType','fte','role','squad','tribe','mpk','department','year','month','quarter','company','companyShare'
+  @Output() delete = new EventEmitter<{ employeeId: number; assignmentId?: number | null }>();
+  private baseColumns: string[] = [
+    'firstName','lastName','tribe','squad','role','department','mpk','fte','contractType','periodId'
   ];
+  displayedColumns: string[] = [...this.baseColumns, 'actions'];
+  companyIds: number[] = [];
   displayedColumnsPeriod = ['id', 'year', 'month', 'quarter', 'isClosed'];
 
   private readonly dicts = inject(DictionariesService);
@@ -51,6 +54,9 @@ export class OpenPeriodViewerComponent implements OnInit {
         mpks?.forEach(m => { if (m?.id != null) this.mpksById.set(m.id, m.name ?? String(m.id)); });
         departments?.forEach(d => { if (d?.id != null) this.departmentsById.set(d.id, d.name ?? String(d.id)); });
         companies?.forEach(c => { if (c?.id != null) this.companiesById.set(c.id, c.name ?? `Company ${c.id}`); });
+        this.companyIds = (companies ?? []).map(c => c.id!).sort((a,b)=>a-b);
+        // Odtwórz listę kolumn: bazowe + dynamiczne kolumny spółek + actions
+        this.displayedColumns = [...this.baseColumns, ...this.companyIds.map(id => `company_${id}`), 'actions'];
         // Po zapełnieniu map oznacz słowniki jako gotowe.
         this.dictsReady = true;
         if (!this.dictsLogged) {
@@ -105,31 +111,22 @@ export class OpenPeriodViewerComponent implements OnInit {
     return this.period?.employees ?? [];
   }
 
-  // Zwraca wiersze zduplikowane per assignment i per company
+  // Wiersz per assignment (pivot kolumn spółek w poziomie)
   flattenedRows() {
     const rows: Array<{
       id: number;
       firstName?: string | null;
       lastName?: string | null;
       assignment: any | null;
-      companyId?: number | null;
     }> = [];
-
     for (const e of this.employees()) {
       const assigns = e.assignments ?? [];
       if (assigns.length === 0) {
-        rows.push({ id: e.id, firstName: e.firstName, lastName: e.lastName, assignment: null, companyId: null });
+        rows.push({ id: e.id, firstName: e.firstName, lastName: e.lastName, assignment: null });
         continue;
       }
       for (const a of assigns) {
-        const comps = a.companies ?? [];
-        if (comps.length === 0) {
-          rows.push({ id: e.id, firstName: e.firstName, lastName: e.lastName, assignment: a, companyId: null });
-          continue;
-        }
-        for (const c of comps) {
-          rows.push({ id: e.id, firstName: e.firstName, lastName: e.lastName, assignment: a, companyId: c.companyId });
-        }
+        rows.push({ id: e.id, firstName: e.firstName, lastName: e.lastName, assignment: a });
       }
     }
     return rows;
@@ -181,13 +178,13 @@ export class OpenPeriodViewerComponent implements OnInit {
   }
 
   companyName(id?: number | null): string {
-    if (id == null) return 'Company —';
+    if (id == null) return '';
     const key = Number(id);
     return this.companiesById.get(key) ?? `Company ${id}`;
   }
 
-  companyShare(a: { companies?: { companyId: number; share: number }[] | null } | null, companyId?: number | null): string {
-    if (!a || companyId == null) return '—';
+  shareForCompany(a: { companies?: { companyId: number; share: number }[] | null } | null, companyId: number): string {
+    if (!a) return '—';
     const found = (a.companies ?? []).find(c => c.companyId === companyId);
     if (!found) return '—';
     const share = Number(found.share);
@@ -201,5 +198,12 @@ export class OpenPeriodViewerComponent implements OnInit {
     const n = Number(fte);
     if (Number.isNaN(n)) return '—';
     return n.toFixed(2).replace(/\.00$/, '.00');
+  }
+
+  deleteRow(row: { id: number; assignment: any | null }) {
+    this.delete.emit({
+      employeeId: row.id,
+      assignmentId: row.assignment?.id ?? null
+    });
   }
 }

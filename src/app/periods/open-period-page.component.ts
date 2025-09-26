@@ -60,4 +60,21 @@ export class OpenPeriodPageComponent implements OnInit {
         error: (e) => this.error.set(String(e?.message ?? e)),
       });
   }
+
+  onDelete(evt: { employeeId: number; assignmentId?: number | null }) {
+    const current = this.period();
+    if (!current) return;
+    const updated = {
+      ...current,
+      employees: (current.employees ?? []).map(e => {
+        if (e.id !== evt.employeeId) return e;
+        // Jeśli brak assignmentId -> usuń pracownika
+        if (!evt.assignmentId) return null;
+        const remainingAssignments = (e.assignments ?? []).filter(a => a.id !== evt.assignmentId);
+        if (remainingAssignments.length === 0) return null;
+        return { ...e, assignments: remainingAssignments };
+      }).filter(e => e != null) as any[]
+    } as typeof current;
+    this.period.set(updated);
+  }
 }
