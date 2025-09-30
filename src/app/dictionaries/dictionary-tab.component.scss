@@ -32,3 +32,9 @@
   align-items: center;
   gap: 12px; /* increase space between Edytuj/Usuń */
 }
+
+/* Snackbar error styling */
+.snack-error {
+  background: #b00020;
+  color: #fff;
+}

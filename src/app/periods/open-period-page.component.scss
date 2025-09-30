@@ -1,3 +1,68 @@
-.error {
-  color: #c62828;
+.open-period-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 4px 0;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.actions-spacer { flex: 1 1 auto; }
+
+.actions-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.generate-btn .btn-text { margin-left: 6px; }
+
+.add-employee-form {
+  padding: 8px 4px 0;
+}
+
+.add-employee-form .fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: flex-end;
+}
+
+.add-employee-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  gap: 2px;
+}
+
+.add-employee-form input {
+  height: 32px;
+  padding: 2px 6px;
+}
+
+.error { color: #c62828; }
+
+.bottom-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 4px 8px;
+}
+
+/* Optional: make bottom bar sticky within page if content grows */
+.open-period-page .bottom-actions {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 4px;
 }

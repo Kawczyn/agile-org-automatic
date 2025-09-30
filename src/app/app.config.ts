@@ -28,6 +28,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideRouter(routes),
     { provide: API_BASE_URL, useValue: environment.apiUrl },
+    // Aby włączyć tryb mocków ustaw environment.mock = true (w odpowiednim pliku env).
+    // Wtedy realne serwisy DictionariesService / PeriodsService zostaną zastąpione wersjami in‑memory.
     ...(isMockMode() ? mockProviders : [])
   ]
 };

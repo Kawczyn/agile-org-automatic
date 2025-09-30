@@ -21,7 +21,13 @@
 
     <ng-container *ngIf="period as p">
       <div class="employees" *ngIf="dictsReady; else loadingDicts">
-  <table mat-table [dataSource]="flattenedRows()" class="mat-elevation-z1 employees-table">
+        <div class="employees-actions" style="display:flex; justify-content:flex-end; margin:6px 0 10px; gap:8px;">
+          <button mat-raised-button color="primary" (click)="openCreateEmployeeDialog()">
+            <mat-icon style="margin-right:4px;">person_add</mat-icon>
+            Dodaj pracownika
+          </button>
+        </div>
+        <table mat-table [dataSource]="flattenedRows()" class="mat-elevation-z1 employees-table">
           <!-- Imię -->
           <ng-container matColumnDef="firstName">
             <th mat-header-cell *matHeaderCellDef> Imię </th>
@@ -37,43 +43,43 @@
           <!-- Tribe -->
           <ng-container matColumnDef="tribe">
             <th mat-header-cell *matHeaderCellDef> Tribe </th>
-            <td mat-cell *matCellDef="let r"> {{ tribeNameForSquad(r.assignment?.squadId) || '—' }} </td>
+            <td mat-cell *matCellDef="let r">{{ tribeNameDirect(r.assignment?.tribeId, r.assignment?.squadId) || '—' }}</td>
           </ng-container>
 
           <!-- Squad -->
-            <ng-container matColumnDef="squad">
-              <th mat-header-cell *matHeaderCellDef> Squad </th>
-              <td mat-cell *matCellDef="let r"> {{ squadName(r.assignment?.squadId) }} </td>
-            </ng-container>
+          <ng-container matColumnDef="squad">
+            <th mat-header-cell *matHeaderCellDef> Squad </th>
+            <td mat-cell *matCellDef="let r">{{ inferredSquadName(r.assignment) }}</td>
+          </ng-container>
 
           <!-- Rola -->
           <ng-container matColumnDef="role">
             <th mat-header-cell *matHeaderCellDef> Rola </th>
-            <td mat-cell *matCellDef="let r"> {{ roleName(r.assignment?.roleId) }} </td>
+            <td mat-cell *matCellDef="let r">{{ roleName(r.assignment?.roleId) }}</td>
           </ng-container>
 
-          <!-- Jednostka organizacyjna (department) -->
+          <!-- Dept -->
           <ng-container matColumnDef="department">
             <th mat-header-cell *matHeaderCellDef> Jednostka org. </th>
-            <td mat-cell *matCellDef="let r"> {{ departmentName(r.assignment?.departmentId) }} </td>
+            <td mat-cell *matCellDef="let r">{{ departmentName(r.assignment?.departmentId) }}</td>
           </ng-container>
 
           <!-- MPK -->
           <ng-container matColumnDef="mpk">
             <th mat-header-cell *matHeaderCellDef> MPK </th>
-            <td mat-cell *matCellDef="let r"> {{ mpkName(r.assignment?.mpkId) }} </td>
+            <td mat-cell *matCellDef="let r">{{ mpkName(r.assignment?.mpkId) }}</td>
           </ng-container>
 
           <!-- FTE -->
           <ng-container matColumnDef="fte">
             <th mat-header-cell *matHeaderCellDef> FTE </th>
-            <td mat-cell *matCellDef="let r"> {{ fteText(r.assignment?.fte) }} </td>
+            <td mat-cell *matCellDef="let r">{{ fteText(r.assignment?.fte) }}</td>
           </ng-container>
 
-          <!-- Format zatrudnienia (contractType) -->
+          <!-- Contract Type -->
           <ng-container matColumnDef="contractType">
             <th mat-header-cell *matHeaderCellDef> Umowa </th>
-            <td mat-cell *matCellDef="let r"> {{ r.assignment?.contractType || '—' }} </td>
+            <td mat-cell *matCellDef="let r">{{ r.assignment?.contractType || '—' }}</td>
           </ng-container>
 
           <ng-container matColumnDef="periodId">
@@ -84,12 +90,18 @@
           <!-- Dynamiczne kolumny spółek (pivot) -->
           <ng-container *ngFor="let cid of companyIds" [matColumnDef]="'company_'+cid">
             <th mat-header-cell *matHeaderCellDef> {{ companyName(cid) }} </th>
-            <td mat-cell *matCellDef="let r"> {{ shareForCompany(r.assignment, cid) }} </td>
+            <td mat-cell *matCellDef="let r">{{ shareForCompany(r.assignment, cid) }}</td>
           </ng-container>
 
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef> Akcje </th>
             <td mat-cell *matCellDef="let r">
+              <button mat-icon-button color="primary" (click)="addAssignment(r.id)" aria-label="Dodaj przypisanie">
+                <mat-icon>add</mat-icon>
+              </button>
+              <button mat-icon-button color="primary" (click)="editRow(r)" aria-label="Edytuj" *ngIf="r.assignment?.id">
+                <mat-icon>edit</mat-icon>
+              </button>
               <button mat-icon-button color="warn" (click)="deleteRow(r)" aria-label="Usuń">
                 <mat-icon>delete</mat-icon>
               </button>
@@ -97,7 +109,7 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns; trackBy: trackRow"></tr>
         </table>
 
         <div class="employees-empty" *ngIf="employees().length === 0">

@@ -11,25 +11,25 @@ export interface DepartmentDto {
 
 export interface EmployeeAssignmentCompanyDto {
   companyId: number;
-  share: number; // 0..1
+  share: number; // double (wartość udziału) – wg spec numeric double
 }
 
 export interface EmployeeAssignmentDto {
-  id?: number;
-  employeeId: number;
-  squadId: number;
-  tribeId: number;
+  id?: string;              // GUID
+  employeeId: string;       // GUID
+  squadId: number | null;   // może być null jeśli brak przypisania do squadu
+  tribeId: number | null;   // każdy squad ma tribe - pole wymagane (może być null jeśli brak)
   roleId: number;
   mpkId?: number | null;
   departmentId?: number | null;
   fte: number;
   contractType?: string | null;
-  periodId: number;
+  periodId: string;         // GUID okresu
   companies?: EmployeeAssignmentCompanyDto[] | null;
 }
 
 export interface EmployeeDto {
-  id: number;
+  id: string; // GUID
   firstName?: string | null;
   lastName?: string | null;
   assignments?: EmployeeAssignmentDto[] | null;
@@ -44,7 +44,7 @@ export interface MPKDto {
 export type MpksDto = MPKDto;
 
 export interface PeriodDto {
-  id: number;
+  id: string; // GUID
   year: number;
   month: number;
   quarter: number;

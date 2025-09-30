@@ -16,6 +16,119 @@ body {
 	background: #f7f9fc;
 }
 
+/* Global Material form styling */
+.mat-mdc-form-field {
+	--mdc-outlined-text-field-outline-color: #b4c2d0;
+	--mdc-outlined-text-field-hover-outline-color: #005BAC;
+	--mdc-outlined-text-field-focus-outline-color: #005BAC;
+}
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+	border-width: 2px;
+}
+
+button.mat-mdc-raised-button.mat-primary {
+	border-radius: 8px;
+	text-transform: none;
+	font-weight:600;
+	letter-spacing:.3px;
+}
+
+/* Compact mode for form fields */
+/* Compact form fields (keep proper label animation) */
+.mat-mdc-form-field.mat-mdc-form-field-type-mat-input .mat-mdc-text-field-wrapper,
+.mat-mdc-form-field .mdc-text-field {
+	--mdc-shape-small: 6px;
+	min-height: 44px; /* slightly taller for label readability */
+}
+.mat-mdc-form-field .mat-mdc-form-field-flex { padding: 0 8px; }
+.mat-mdc-form-field .mdc-notched-outline__leading,
+.mat-mdc-form-field .mdc-notched-outline__notch,
+.mat-mdc-form-field .mdc-notched-outline__trailing { height: 44px; }
+/* leave floating label default for correct scaling */
+
+/* Compact select panel items */
+.mat-mdc-option .mdc-list-item__primary-text { line-height: 20px; }
+.mat-mdc-option { min-height: 34px; }
+
+/* Compact buttons */
+button.mat-mdc-raised-button, button.mat-mdc-button, button.mat-mdc-outlined-button, button.mat-mdc-unelevated-button,
+button.mat-mdc-icon-button, .mat-mdc-button-base {
+	--mdc-typography-button-letter-spacing: .3px;
+	font-weight:500;
+}
+button.mat-mdc-raised-button, button.mat-mdc-outlined-button, button.mat-mdc-unelevated-button {
+	padding: 0 14px;
+	min-height: 36px; /* default 40 */
+	border-radius: 7px;
+}
+button.mat-mdc-button { min-height: 34px; }
+button.mat-mdc-icon-button { width:38px; height:38px; }
+
+/* Compact dialog content spacing */
+.mat-mdc-dialog-container .mdc-dialog__content { padding-top:4px; padding-bottom:4px; }
+
+/* Table cell compactness */
+table.mat-mdc-table .mat-mdc-cell, table.mat-mdc-table .mat-mdc-header-cell { padding: 2px 6px; }
+
+/* Dialog refinements */
+.mat-mdc-dialog-container .mdc-dialog__title { font-weight:600; letter-spacing:.3px; }
+.mat-mdc-dialog-container .mdc-dialog__content { padding-top:8px; }
+
+// Snackbar variant backgrounds (accessible, higher contrast, light error tone)
+// Target the container explicitly for stronger specificity.
+
+// Redesign snackbar: białe tło, delikatny pasek koloru + subtelny gradient na tle.
+// Używamy klas z panelClass: .app-snack + .snack-[variant]
+.mat-mdc-snack-bar-container.app-snack {
+	--snack-radius: 10px;
+	padding: 0 !important;
+	border-radius: var(--snack-radius) !important;
+	background: transparent !important; /* usunięcie szarego/ciemnego bloku */
+	--mdc-snackbar-container-color: transparent; /* nadpisanie zmiennej MDC */
+	box-shadow: none !important; /* brak ciężkiego cienia */
+	overflow: visible;
+	.notification { padding: 10px 16px 10px 14px; font-weight: 500; border-radius: var(--snack-radius); }
+	.notification .icon { font-size: 15px; margin-right: 2px; }
+}
+
+/* Kluczowe: wewnętrzny element MDC nadal miał tło (#323232). Nadpisujemy je. */
+.mat-mdc-snack-bar-container.app-snack .mdc-snackbar__surface {
+	background: transparent !important;
+	box-shadow: none !important;
+	padding: 0 !important;
+}
+
+// Pasek koloru po lewej + lekki tint w tle wnętrza (pseudo-element)
+.mat-mdc-snack-bar-container.app-snack.snack-success { background: #f0fbf3 !important; border-left: 6px solid #2e7d32; }
+.mat-mdc-snack-bar-container.app-snack.snack-error   { background: #fff4f4 !important; border-left: 6px solid #e53935; }
+.mat-mdc-snack-bar-container.app-snack.snack-warn    { background: #fff9ed !important; border-left: 6px solid #ffb300; }
+.mat-mdc-snack-bar-container.app-snack.snack-info    { background: #f1f7fe !important; border-left: 6px solid #1976d2; }
+
+.mat-mdc-snack-bar-container.app-snack.snack-success .notification { color: #1b5e20; background: transparent; border: 0; }
+.mat-mdc-snack-bar-container.app-snack.snack-error   .notification { color: #b71c1c; background: transparent; border: 0; }
+.mat-mdc-snack-bar-container.app-snack.snack-warn    .notification { color: #7a5200; background: transparent; border: 0; }
+.mat-mdc-snack-bar-container.app-snack.snack-info    .notification { color: #0d47a1; background: transparent; border: 0; }
+
+// Inner layout refinement
+.mat-mdc-snack-bar-container .notification {
+	padding: 4px 6px 4px 2px;
+	font-weight: 500;
+	letter-spacing: .2px;
+}
+.mat-mdc-snack-bar-container .notification .text {
+	line-height: 1.3;
+}
+.mat-mdc-snack-bar-container .notification .icon {
+	font-size: 16px;
+	display: inline-flex;
+	width: 18px;
+	justify-content: center;
+	align-items: center;
+	opacity: .9;
+}
+
 /* Dictionary tabs: let the page scroll, not the inner tab content */
 .dict-tabs {
   height: auto;

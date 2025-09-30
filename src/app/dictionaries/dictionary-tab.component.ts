@@ -5,6 +5,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { NotificationService } from '../shared/notification/notification.service';
 import { MatSelectModule } from '@angular/material/select';
 import { DictionariesService } from '../services/dictionaries.service';
 import { CompanyDto, DepartmentDto, MPKDto, RoleDto, SquadDto, TribeDto } from '../models/api.models';
@@ -24,7 +26,7 @@ type DtoMap = {
 @Component({
   selector: 'app-dictionary-tab',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatTableModule, MatSelectModule],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatTableModule, MatSelectModule, MatSnackBarModule],
   templateUrl: './dictionary-tab.component.html',
   styleUrls: ['./dictionary-tab.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,6 +34,7 @@ type DtoMap = {
 export class DictionaryTabComponent<TKind extends DictionaryKind = DictionaryKind> implements OnInit {
   private readonly dictionaries = inject(DictionariesService);
   private readonly fb = inject(FormBuilder);
+  private readonly notify = inject(NotificationService);
 
   @Input({ required: true }) kind!: TKind;
 
@@ -39,7 +42,7 @@ export class DictionaryTabComponent<TKind extends DictionaryKind = DictionaryKin
   data = signal<DtoMap[TKind][]>([] as any);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
-  displayedColumns: string[] = ['id', 'name', 'actions'];
+  displayedColumns: string[] = ['name', 'actions'];
 
   form!: FormGroup<{ id: FormControl<number | null>; name: FormControl<string>; tribeId: FormControl<number | null> }>;
   // -1 = brak edycji; dowolny id = edycja wiersza
@@ -61,8 +64,8 @@ export class DictionaryTabComponent<TKind extends DictionaryKind = DictionaryKin
       tribeId: this.fb.control<number | null>(null),
     });
     if (this.kind === 'squads') {
-      // Add tribe column for squads
-      this.displayedColumns = ['id', 'name', 'tribeId', 'actions'];
+      // Add tribe column for squads (bez kolumny id)
+      this.displayedColumns = ['name', 'tribeId', 'actions'];
       // Load tribes for select options
       this.dictionaries.getTribes().subscribe({
         next: (list) => this.tribesOptions.set(list),
@@ -108,22 +111,29 @@ export class DictionaryTabComponent<TKind extends DictionaryKind = DictionaryKin
     });
   }
 
-  beginAdd(): void {
+beginAdd(): void {
+    // Guard: jeśli aktualnie edytujemy wiersz, zakończ edycję
+    if (this.editingId() !== -1) {
+      this.editingId.set(-1);
+    }
     this.isAdding.set(true);
-    this.editingId.set(-1);
-    this.form.reset({ id: null, name: '' });
-  }
+    // Reset także tribeId dla squads
+    this.form.reset({ id: null, name: '', tribeId: null });
+}
 
   beginEdit(row: any): void {
-    this.isAdding.set(false);
+    // Guard: jeśli w trybie dodawania, wyjdź z niego
+    if (this.isAdding()) {
+      this.isAdding.set(false);
+    }
     this.editingId.set(row.id);
-    this.form.patchValue({ id: row.id ?? null, name: row.name ?? '' });
+    this.form.patchValue({ id: row.id ?? null, name: row.name ?? '', tribeId: (this.kind === 'squads' ? row.tribeId ?? null : this.form.controls.tribeId.value) });
   }
 
   cancel(): void {
     this.isAdding.set(false);
     this.editingId.set(-1);
-    this.form.reset({ id: null, name: '' });
+    this.form.reset({ id: null, name: '', tribeId: null });
   }
 
   save(): void {
@@ -170,11 +180,17 @@ export class DictionaryTabComponent<TKind extends DictionaryKind = DictionaryKin
       next: () => {
         this.cancel(); // hides add form & clears edit state
         this.load();
+  this.notify.success('Zapisano pomyślnie');
       },
-      error: (err) => this.error.set(String(err?.message ?? err)),
+      error: (err) => {
+  const msg = String(err?.message ?? err ?? 'Błąd');
+  this.notify.error(msg);
+      },
       complete: () => this.loading.set(false),
     });
   }
+
+  // Usunięto onSaveClick – bezpośrednio wywołujemy save() z template
 
   remove(row: any): void {
     if (!confirm('Usunąć element?')) return;
@@ -208,8 +224,12 @@ export class DictionaryTabComponent<TKind extends DictionaryKind = DictionaryKin
       next: () => {
         this.isAdding.set(false);
         this.load();
+  this.notify.success('Usunięto');
       },
-      error: (err) => this.error.set(String(err?.message ?? err)),
+      error: (err) => {
+  const msg = String(err?.message ?? err ?? 'Błąd');
+  this.notify.error(msg);
+      },
       complete: () => this.loading.set(false),
     });
   }
