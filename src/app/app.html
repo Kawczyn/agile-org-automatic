@@ -6,10 +6,20 @@
 
 	<span class="spacer"></span>
 
-		<nav class="main-nav">
-				<button mat-button routerLink="/okres">Lista pracowników w okresie</button>
-				<button mat-button routerLink="/okresy">Okresy</button>
-			<button mat-button routerLink="/slowniki">Słowniki</button>
+		<nav class="main-nav" aria-label="Główna nawigacja">
+			<button mat-button routerLink="/okres" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+				<mat-icon aria-hidden="true">group</mat-icon>
+				<span>Lista pracowników w okresie</span>
+			</button>
+			<button mat-button routerLink="/okresy" routerLinkActive="active">
+				<mat-icon aria-hidden="true">calendar_month</mat-icon>
+				<span>Okresy</span>
+			</button>
+			<div class="nav-separator" role="separator" aria-hidden="true"></div>
+			<button mat-button routerLink="/slowniki" routerLinkActive="active">
+				<mat-icon aria-hidden="true">tune</mat-icon>
+				<span>Słowniki</span>
+			</button>
 		</nav>
 </mat-toolbar>
 

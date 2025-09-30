@@ -38,8 +38,53 @@
 	text-transform: none;
 }
 
+/* Konsystentny kształt przycisków w menu (normal / hover / active / pressed) */
+.main-nav button[mat-button],
+.main-nav button[mat-button].mdc-button--pressed,
+.main-nav button[mat-button]:active,
+.main-nav button[mat-button]:focus-visible {
+	border-radius: 20px; /* zaokrąglenie jak w stanie .active */
+}
+
+/* Upewnij się że ripple i tło trzymają kształt elipsy */
+.main-nav button[mat-button] .mat-mdc-button-persistent-ripple,
+.main-nav button[mat-button] .mat-mdc-button-ripple,
+.main-nav button[mat-button] .mat-mdc-button-touch-target {
+	border-radius: inherit;
+}
+
+/* Opcjonalnie lekkie tło przy hover/active dla spójności (nie nadpisuje .active) */
+.main-nav button[mat-button]:hover:not(.active) {
+	background: rgba(255,255,255,0.08);
+}
+.main-nav button[mat-button]:active:not(.active) {
+	background: rgba(255,255,255,0.14);
+}
+
+/* Nav grouping */
+
+.main-nav {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.main-nav .nav-separator {
+	width: 1px;
+	background: rgba(255,255,255,0.25);
+	margin: 0 4px;
+}
+
+.main-nav button.active {
+	background: rgba(255,255,255,0.18);
+	font-weight: 600;
+	border-radius: 20px;
+}
+
+.main-nav button.active:hover {
+	background: rgba(255,255,255,0.24);
+}
+
 @media (max-width: 600px) {
-	.main-nav {
-		display: contents;
-	}
+	.main-nav { flex-wrap: wrap; }
 }
