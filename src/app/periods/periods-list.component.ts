@@ -26,14 +26,9 @@ interface PeriodRow extends PeriodDto {
         <th mat-header-cell *matHeaderCellDef> Rok </th>
         <td mat-cell *matCellDef="let r"> {{ r.year }} </td>
       </ng-container>
-      <!-- Month -->
-      <ng-container matColumnDef="month">
-        <th mat-header-cell *matHeaderCellDef> Miesiąc </th>
-        <td mat-cell *matCellDef="let r"> {{ r.month }} </td>
-      </ng-container>
-      <!-- Month Name -->
+      <!-- Month Name Only -->
       <ng-container matColumnDef="monthName">
-        <th mat-header-cell *matHeaderCellDef> Miesiąc (nazwa) </th>
+        <th mat-header-cell *matHeaderCellDef> Miesiąc </th>
         <td mat-cell *matCellDef="let r"> {{ monthName(r.month) }} </td>
       </ng-container>
       <!-- Quarter -->
@@ -86,7 +81,7 @@ export class PeriodsListComponent {
   private readonly events = inject(PeriodsEventsService);
   private readonly notify = inject(NotificationService);
 
-  displayedColumns = ['year', 'month', 'monthName', 'quarter', 'isClosed', 'actions'];
+  displayedColumns = ['year', 'monthName', 'quarter', 'isClosed', 'actions'];
   rows = signal<PeriodDto[]>([]);
   loading = signal<boolean>(true);
   exportingId = signal<string | null>(null);
